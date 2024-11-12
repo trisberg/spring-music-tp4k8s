@@ -1,6 +1,6 @@
-id: 6e41e62a-4acf-4484-9466-65b0bb339bd2
+id: 50bfd43d-bcf9-49b4-aa3f-8fd16c9eeed2
 name: spring-music
-timestamp: 2024-11-07T15:15:00.391821Z
+timestamp: 2024-11-12T14:40:20.274078Z
 source: INTELLIJ
 username: risbergt
 fragments:
@@ -23,8 +23,9 @@ accelerator:
     subPath: spring-music
     ref: main
 options:
+  databaseType: postgres
   deploymentType: tpfork8s
   persistenceType: jpa
   includeBuildToolWrapper: true
   javaVersion: "21"
-  projectName: spring-music
+  projectName: spring-music-tp4k8s

@@ -32,13 +32,7 @@ The supported databases are:
 - postgresql
     - add this profile to the java command when starting the app `-Dspring.profiles.active=postgres`
 
-The application can be started locally using the following commands:
-
-#### Using H2 database
-
-```shell
-java -jar build/libs/spring-music-1.0.0.jar
-```
+The application can be started locally using the following configurations and commands.
 
 #### Using PostgreSQL database
 
@@ -51,50 +45,7 @@ docker run --rm --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d po
 Then start the application:
 
 ```shell
-java -Dspring.profiles.active=postgresql -jar build/libs/spring-music-1.0.0.jar
-```
-
-#### Using MySQL database
-
-First, start a Docker container fpr `mysql`
-
-```shell
-docker run --rm --name=mysql -p 3306:3306 -d mysql/mysql-server:latest
-```
-
-First, we need to capture the generated root password, log in and change it:
-
-```shell
-docker logs mysql 2>&1 | grep GENERATED
-```
-
-We can now use the password shown above when logging in:
-
-```shell
-docker exec -it mysql mysql -uroot -p
-```
-
-We should now get a `mysql>` prompt. Run the following command to change the root password:
-
-```sql
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
-```
-
-Now, we can create a new `spring` user from the same `mysql>` prompt:
-
-```sql
-CREATE USER 'spring'@'%' IDENTIFIED BY 'password';
-GRANT CREATE, SELECT, INSERT, UPDATE ON mysql.album TO 'spring'@'%';
-FLUSH PRIVILEGES;
-exit
-```
-
-We should now have a `spring` MySQL user that we can use for the app.
-
-Once all of this is done, start the application:
-
-```shell
-java -Dspring.profiles.active=mysql -jar build/libs/spring-music-1.0.0.jar
+java -Dspring.profiles.active=postgresql -jar build/libs/spring-music-tp4k8s-1.0.0.jar
 ```
 
 Access the application by opening your browser using the URL [http://localhost:8080](http://localhost:8080)
@@ -114,7 +65,7 @@ Change to the root directory of your generated app.
 The project contains a `ContainerApp` manifest file that can be used when building and deploying the app. To review the content of this file run:
 
 ```sh
-cat .tanzu/config/spring-music.yml
+cat .tanzu/config/spring-music-tp4k8s.yml
 ```
 
 ### Configure HTTP Ingress Routing
@@ -125,26 +76,6 @@ If you want to expose your application with a domain name and route traffic from
 
 Change to the root directory of your generated app.
 
-#### Configure service binding for the app
-
-For MySQL and PostgreSQL it is necessary to define the service binding name and type plus setting the active Spring profile.
-
-If you are using MySQL then use:
-
-```shell
-tanzu app config servicebinding set music=mysql
-tanzu app config non-secret-env set SPRING_PROFILES_ACTIVE=mysql
-```
-
-And, if you are using PostgreSQL then use:
-
-```shell
-tanzu app config servicebinding set music=postgresql
-tanzu app config non-secret-env set SPRING_PROFILES_ACTIVE=postgres
-```
-
-#### Building and deploying the app in one step
-
 You can build and deploy the app with a single command.
 Just run:
 
@@ -154,43 +85,22 @@ tanzu deploy
 
 ### Create the service and bind it to the app
 
+The deployment includes a PostgreSQL instance using a provided service type.
+The instance is bound to the app.
 
-You can deploy the application as is if you want to use the embedded `H2` database.
-
-You can deploy a MySQL or PostgreSQL instance using a provided service type.
-To list available service types use:
-
-```shell
-tanzu services type list
-```
-
-Create a MySQL database service instance using:
-
-```shell
-tanzu services create MySQLInstance/music
-```
-
-Create a PostgreSQL database service instance using:
-
-```shell
-tanzu services create PostgreSQLInstance/music
-```
-
-When prompted, bind the service to your deployed app.
-
-You can list the services you have created using:
+You can list the services created using:
 
 ```shell
 tanzu services list
 ```
 
 
-#### Scale the number of instances
+### Check the status of the app deployment
 
-When the service you created becomes `Ready`, then you can run this command to scale the app to 1 instance:
+You can run this command to see the status of the app deployment:
 
 ```shell
-tanzu app scale spring-music --instances=1
+tanzu apps get spring-music-tp4k8s
 ```
 
 ### Use port-forward to access an app instance
@@ -200,7 +110,7 @@ Just select the instance you want when prompted.
 Use the following command to start the port-forward:
 
 ```shell
-tanzu app port-forward spring-music --port 8080
+tanzu app port-forward spring-music-tp4k8s --port 8080
 ```
 
 Then you can access the app using http://localhost:8080.

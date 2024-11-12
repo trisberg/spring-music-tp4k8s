@@ -1,0 +1,14 @@
+apiVersion: services.tanzu.vmware.com/v1
+kind: ServiceBinding
+metadata:
+    name: music-336d84
+spec:
+  alias: music
+  serviceRef:
+    apiGroup: bitnami.database.tanzu.vmware.com
+    kind: PostgreSQLInstance
+    name: music
+  targetRef:
+    apiGroup: apps.tanzu.vmware.com
+    kind: ContainerApp
+    name: spring-music-tp4k8s
